@@ -2,7 +2,8 @@
 
 namespace app\models;
 
-use Yii;
+
+use yii\db\ActiveRecord;
 
 /**
  * This is the model class for table "post".
@@ -11,7 +12,7 @@ use Yii;
  * @property string|null $name
  * @property string|null $body
  */
-class Post extends \yii\db\ActiveRecord
+class Post extends ActiveRecord
 {
     /**
      * {@inheritdoc}
@@ -27,7 +28,10 @@ class Post extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['name', 'body'], 'string', 'max' => 255],
+            [['title', 'body'], 'required'],
+            [['body'], 'string'],
+//            [['create_time', 'update_time'], 'safe'],
+            [['title'], 'string', 'max' => 255],
         ];
     }
 
@@ -38,8 +42,13 @@ class Post extends \yii\db\ActiveRecord
     {
         return [
             'id' => 'ID',
-            'name' => 'Name',
+            'title' => 'Title',
             'body' => 'Body',
         ];
+    }
+
+    public function getLinks()
+    {
+
     }
 }

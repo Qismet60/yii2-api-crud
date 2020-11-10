@@ -2,7 +2,7 @@
 
 namespace app\controllers;
 
-use app\models\EntryForm;
+use app\models\Employer;
 use Yii;
 use yii\filters\AccessControl;
 use yii\web\Controller;
@@ -128,7 +128,7 @@ class SiteController extends Controller
     }
     public function actionEntry()
     {
-        $model = new EntryForm();
+        $model = new Employer();
         if ($model->load(Yii::$app->request->post()) && $model->validate())
         {
             $model->name = $this->name;

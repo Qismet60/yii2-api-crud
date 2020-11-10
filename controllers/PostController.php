@@ -3,41 +3,22 @@
 namespace app\controllers;
 
 use app\models\Post;
-use phpDocumentor\Reflection\Types\This;
-use yii\db\Exception;
-use yii\web\NotFoundHttpException;
+use yii\rest\ActiveController;
 
-class PostController extends \yii\web\Controller
+
+class PostController extends ActiveController
 {
-    public function actionIndex()
-    {
-        $query = new Post();
-        return $this->render('index');
-    }
+    public $modelClass = Post::class;
 
-    public function actionCreate()
+
+    /*public function actions()
     {
-        $query = new Post();
-        if ($query->load(\Yii::$app->request->post()) && $query->save())
-        {
-            return $this->redirect(['view','id'=>$query->id]);
-        }else{
-            return $this->render('index',[
-               'model' =>$query
-            ]);
-        }
-    }
-    public function actionView($id)
-    {
-        $model = Post::findOne($id);
-        if ($model===null){
-            throw new NotFoundHttpException();
-        }
-        else{
-            return $this->render('view',[
-               'model' => $model
-            ]);
-        }
-    }
+        $actions = parent::actions();
+
+        unset($actions['view']);
+
+
+        return $actions;
+    }*/
 
 }
