@@ -3,38 +3,78 @@
 namespace app\controllers;
 
 use app\models\Customer;
-use yii\db\Query;
-use yii\elasticsearch\ElasticsearchTarget;
-use yii\helpers\VarDumper;
+use yii\elasticsearch\Exception;
+use yii\rest\ActiveController as Controller;
 
-class CustomerController extends \yii\web\Controller
+
+class CustomerController extends Controller
 {
-    public $enableCsrfValidation = false;
+
+    public $modelClass = Customer::class;
+
+    public function actions()
+    {
+        $actions = parent::actions();
+        unset($actions['view'], $actions['delete'],$actions['update'],$actions['index']);
+        return $actions;
+
+    }
 
     public function actionIndex()
     {
-        $customer = Customer::get(1);
-        return $this->asJson(['customers' => $customer]);
+        $customers = Customer::find()->limit(100)->all();
+//            $customer = Customer::find()->query([
+//            'bool' => [
+//                'must' => [
+//                    ['term' => ['name' => 'rest']],
+//                    ['terms' => ['email' => ['Resttest@mail.com']]]
+//                ]
+//            ]
+//        ])->all();
+//        $customer = Customer::find()->query(['match' => ['name' => 'testRestActive']])->search();
+//        return $this->asJson(['customers' => $customer['hits']['hits'][0]]);
+        return $this->asJson(['customers' => $customers]);
     }
 
     public function actionCreate()
     {
-//        $index = Customer::createIndex();
-//        if (!$index){
-//            return $this->asJson('error');
-//        }
         $customer = new Customer();
-        $customer->_id = 1;
-        $customer->attributes = [
-            'first_name' => 'user',
-            'last_name' => 'surname',
-            'email' => 'example.com@mail.ru'
-        ];
-        if ($customer->insert()){
+        if ($customer->load(\Yii::$app->request->post())) {
+            $customer->insert();
             return $this->asJson(['customer' => $customer]);
+        } else {
+            return $customer->errors;
         }
-        return $this->asJson(['message' => 'while inserting error']);
-
     }
+
+    public function actionView($id)
+    {
+        $customer = new Customer();
+        if (\Yii::$app->request->get()) {
+            $customer = Customer::findOne($id);
+            return $this->asJson(['customer' => $customer]);
+        } else {
+            return $customer->errors;
+        }
+    }
+
+    public function actionDelete($id)
+    {
+        $customer = new Customer();
+        try {
+            $customer = Customer::deleteAll(['id' => $id]);
+            return $this->asJson(['message' => 'delete']);
+        } catch (Exception $e) {
+            return $customer->errors;
+        }
+    }
+
+    public function actionUpdate($id){
+        $customer = new Customer();
+        $findID = Customer::findOne($id);
+        dd($findID);
+//        if($customer->load(\Yii::$app->request->post()))
+    }
+
 
 }
