@@ -2,22 +2,12 @@
 
 $params = require __DIR__ . '/params.php';
 $db = require __DIR__ . '/db.php';
-
 $config = [
     'id' => 'basic',
     'basePath' => dirname(__DIR__),
-//    'bootstrap' => ['log'],
     'bootstrap' => ['debug'],
-    'modules' => [
-        'debug' => [
-            'class' => 'yii\\debug\\Module',
-            'panels' => [
-                'elasticsearch' => [
-                    'class' => 'yii\\elasticsearch\\DebugPanel',
-                ],
-            ],
-        ],
-    ],
+
+
     'aliases' => [
         '@bower' => '@vendor/bower-asset',
         '@npm' => '@vendor/npm-asset',
@@ -53,15 +43,20 @@ $config = [
                 ],
             ],
         ],
-        'db' => $db,
-
+//        'db' => $db,
         'urlManager' => [
-            'enableStrictParsing' => false,
             'enablePrettyUrl' => true,
+            'enableStrictParsing' => true,
             'showScriptName' => false,
-//            'class' => 'yii\web\UrlManager',
+//            'class' => 'yii\rest\UrlManager',
             'rules' => [
-                '<controller>/<action>' => '<controller>/<action>'
+//                '<controller>/<action>' => '<controller>/<action>'
+                ['class' => 'yii\rest\UrlRule', 'controller' => 'customer'],
+                'customer/view/<id>' => 'customer/view',
+                'customer/delete/<id>' => 'customer/delete',
+                'customer/update/<id>' => 'customer/update',
+                'customer/create' => 'customer/create',
+
             ],
         ],
         'elasticsearch' => [
@@ -71,11 +66,11 @@ $config = [
                 // configure more hosts if you have a cluster
             ],
             'auth' => [
-                'username' => 'yii-elastic',
-                'password' => 'yiielastic',
+                'username' => 'username',
+                'password' => 'password',
             ],
             // set autodetectCluster to false if you don't want to auto detect nodes
-            // 'autodetectCluster' => false,
+            'autodetectCluster' => false,
             'dslVersion' => 7, // default is 5
         ],
 
@@ -83,13 +78,17 @@ $config = [
     'params' => $params,
 ];
 
-if (YII_ENV_DEV) {
+if (YII_ENV_DEV || true) {
     // configuration adjustments for 'dev' environment
     $config['bootstrap'][] = 'debug';
     $config['modules']['debug'] = [
-        'class' => 'yii\debug\Module',
-        // uncomment the following to add your IP if you are not connecting from localhost.
-        //'allowedIPs' => ['127.0.0.1', '::1'],
+        'class' => 'yii\\debug\\Module',
+        'panels' => [
+            'elasticsearch' => [
+                'class' => 'yii\\elasticsearch\\DebugPanel',
+            ],
+        ],
+
     ];
 
     $config['bootstrap'][] = 'gii';
