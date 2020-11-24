@@ -8,16 +8,35 @@ use yii\elasticsearch\ActiveRecord;
 
 class Customer extends ActiveRecord
 {
+
+    public static function index()
+    {
+        new \yii\db\ActiveRecord();
+        return 'yii2_affiliate_service_customer';
+    }
+
+
+    public function rules()
+    {
+        return [
+            [['name','email','surname'],'required'],
+            ['name','string'],
+            ['surname','string'],
+            ['email','email'],
+        ];
+    }
+
     public static function mapping()
     {
         return [
             'properties' => [
-                'first_name' => ['type' => 'text'],
-                'last_name' => ['type' => 'text'],
+                'name' => ['type' => 'text'],
+                'surname' => ['type' => 'text'],
                 'email' => ['type' => 'keyword'],
             ]
         ];
     }
+
 
     public static function updateMapping()
     {
@@ -46,13 +65,17 @@ class Customer extends ActiveRecord
 
         $command = $db->createCommand();
 
-        $command->deleteIndex(static::index(), static::type());
+        $command->deleteIndex(static::index());
     }
 
     public function attributes()
     {
         return [
-            'first_name', 'last_name', 'email'
+            'surname', 'name', 'email'
         ];
+    }
+
+    public function search(){
+
     }
 }
